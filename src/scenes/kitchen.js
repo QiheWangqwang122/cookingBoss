@@ -1,8 +1,8 @@
 class Play extends Phaser.Scene {
     constructor() {
         super('playScene');
-        this.survivalTime = 0;
-        this.score = 0
+        // this.survivalTime = 0;
+        // this.score = 0
     }
 
     preload() {
@@ -10,11 +10,7 @@ class Play extends Phaser.Scene {
         // this.load.spritesheet('player', './assets/PlayerRunning.png', { frameWidth: 32, frameHeight: 64 });
         // // Load an image asset to represent the ground
         // this.load.image('kitchen_bg', './assets/kitchin2.png');
-        // this.load.image('ladder', './assets/ladder.png');
-        // this.load.image('star', './assets/stars.png');
-        // this.load.image('cloud','./assets/cloud.png');
-        // this.load.image('ground_physic','./assets/ground2.png');
-        // this.load.spritesheet('ground_pit_random','./assets/pit.png',{frameWidth:50, frameHeight: 40})
+
     }
 
     create() {

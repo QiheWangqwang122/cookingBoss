@@ -4,9 +4,7 @@ class Play extends Phaser.Scene {
         this.survivalTime = 0;
     }
 
-    // some settings:
-    materials = [1, 2, 3, 4]  // 初步4种材料
-    orderList = [] // 订单-最多四个 ，后续可能再添加
+
 
     preload() {
 
@@ -26,18 +24,30 @@ class Play extends Phaser.Scene {
         this.load.image('building5', './assets/scene/building5.png');
 
         // panel
-        this.load.image('cookingPanel','./assets/panel/cooking_panel.png')
-        this.load.image('orderPanel','./assets/panel/order_panel.png')
-
+        this.load.image('cookingPanel', './assets/panel/cooking_panel.png')
+        this.load.image('orderPanel', './assets/panel/order_panel.png')
+        this.load.spritesheet('currentOrder', './assets/panel/current_order.png', {frameWidth: 120, frameHeight: 120})
 
         // burger
-        this.load.image('burger_1','./assets/burger/burger_1.png')
-        this.load.image('burger_2','./assets/burger/burger_2.png')
-        this.load.image('burger_3','./assets/burger/burger_3.png')
+        this.load.image('burger_0', './assets/burger/burger_1.png')
+        this.load.image('burger_1', './assets/burger/burger_2.png')
+        this.load.image('burger_2', './assets/burger/burger_3.png')
         // 灶台
         this.load.image('stove', './assets/scene/stove.png');
         // 垃圾桶
         this.load.image('bin', './assets/scene/bin.png');
+
+        // guest
+        this.load.image('guest', './assets/npc/guest.png');
+
+
+        // materials
+        this.load.image('sauce_1', './assets/material/sauce_1.png')
+        this.load.image('sauce_2', './assets/material/sauce_2.png')
+        this.load.image('sauce_3', './assets/material/sauce_3.png')
+        this.load.image('tomato', './assets/material/tomato2.png')
+        this.load.image('vegetable', './assets/material/vegetable.png')
+        this.load.image('meat', './assets/material/tomato2.png')
 
     }
 
@@ -58,9 +68,17 @@ class Play extends Phaser.Scene {
         // 交互物品
         // stove
         this.stove = this.add.image(400, 410, 'stove')
+
+        // tomatoes
         this.tomatoes = this.add.image(300, 400, 'tomatoes')
-        this. bin =this.add.image(480, 410, 'bin')
-        this. bin.setScale(0.4)
+
+        // bin
+        this.bin = this.add.image(480, 410, 'bin')
+        this.bin.setScale(0.4)
+
+        // guest
+        this.guests = this.add.image(550, 395, 'guest')
+
         // player 相关
         this.anims.create({
             key: 'run',
@@ -78,18 +96,34 @@ class Play extends Phaser.Scene {
         // Create the player sprite and set physics properties
         this.pixelPlayer = this.physics.add.sprite(100, 400, 'player');
         this.pixelPlayer.setCollideWorldBounds(true);
-        this.ladders = this.physics.add.group();
+        // this.ladders = this.physics.add.group();
         // Make the player collide with the ground
         this.physics.add.collider(this.pixelPlayer, building);
 
         // Set up cursor keys for input
         this.cursors = this.input.keyboard.createCursorKeys();
-        this.pixelPlayer.setCollideWorldBounds(true);
-        this.physics.add.collider(this.pixelPlayer, building);
+        // this.pixelPlayer.setCollideWorldBounds(true);
+        // this.physics.add.collider(this.pixelPlayer, building);
 
-
+        // currentOrder
         // 面板相关
         this.cookingPanel = this.add.image(750, 100, 'cookingPanel')
+        this.currentArrow = this.physics.add.sprite(100, 120, 'currentOrder')
+        this.currentArrow.setScale(0.5)
+        this.currentArrow.body.setAllowGravity(false);
+        this.anims.create({
+            key: 'arrowMove',
+            frames: this.anims.generateFrameNumbers('arrowMove', {start: 0, end: 2}),
+            frameRate: 10,// framerates
+            repeat: -1
+        });
+        // orderPanel
+        // this.anims.create({
+        //     key: 'updateOrder',
+        //     frames: this.anims.generateFrameNumbers('updateOrder', {start: 0, end: 2}),
+        //     frameRate: 10,// framerates
+        //     repeat: -1
+        // });
 
         // 订单面板
         this.orderPanel1 = this.add.image(50, 50, 'orderPanel')
@@ -100,70 +134,213 @@ class Play extends Phaser.Scene {
         this.orderPanel2.setScale(0.5)
         this.orderPanel3.setScale(0.5)
         this.orderPanel4.setScale(0.5)
+
+        // 生成订单
+        this.generateOrder()
+        this.generateOrder()
+        this.generateOrder()
+        this.generateOrder()
     }
 
-    generateOrder(){
-        let randomNum = 1
+    order_position = [[50, 50], [120, 50], [190, 50], [260, 50]]
+
+    generateOrder() {
+        let randomNum = Math.floor(Math.random() * 3);  // [0,1,2]
+        let burgerPanel = this.physics.add.sprite(50, 50, 'burger_' + randomNum)
         let order = {
-            type:randomNum, // 1 2 3 4
-            loadMartial:'burger_' + randomNum
+            type: randomNum, // [0,1,2]
+            loadMartial: 'burger_' + randomNum,
+            burgerPanel: burgerPanel
         }
+        burgerPanel.body.setAllowGravity(false);
+        // this.orderList.shift()
         this.orderList.push(order)
+        // 订单列表刷新
+        this.orderList.forEach((or, index) => {
+            try {
+                or.burgerPanel.destroy()
+                or.burgerPanel = this.physics.add.sprite(this.order_position[index][0], this.order_position[index][1], or.loadMartial)
+                or.burgerPanel.body.setAllowGravity(false);
+            } catch (e) {
+                console.log('destroy order err')
+            }
+
+        })
+        console.log(this.orderList)
     }
 
-    addMaterial(){
+    // add material to cooking panel and render
+    // sauce_1
+    // sauce_2
+    // sauce_3
+    // tomato
+    // vegetable
+    cooking_position = [[750, 55], [750, 100], [750, 145]]
+
+    addMaterial(material) {
+
+        let index = this.cookingList.length
+        if (this.cookingList.length == 3) {
+            console.log('add material err') // todo: 可弹出提示
+            return;
+        }
+
+        let tmp = {
+            type: material,
+            loadMartial: material,
+            cookingPanel: this.physics.add.sprite(this.cooking_position[index][0], this.cooking_position[index][1], material)
+        }
+        tmp.cookingPanel.body.setAllowGravity(false)
+        this.cookingList.push(tmp)
 
     }
+
+    clearCookingList() {
+        try {
+            this.cookingList.forEach(m => {
+                m.cookingPanel.destroy()
+            })
+
+            this.cookingList = []
+        } catch (e) {
+            console.error(e)
+        }
+
+    }
+
+    panelAnime() {
+        // this.currentArrow.anims.play('arrowMove',true)
+    }
+
     finishOrder() {
+        // this.burgerPanels.destroy()
+        this.orderList.shift()
 
+    }
+
+    goToFarm() {
+        this.scene.start('playFarm');
+
+    }
+
+
+    // 配料表
+    // type 0: burger_1 = sauce_1 + tomato + vegetable
+    // type 1: burger_2 = sauce_2 + tomato + vegetable
+    // type 2: burger_3 = sauce_3 + tomato + vegetable
+    checkCanFinish(){
+       if(this.orderList[0].type == 0) {
+           // 0:
+           if(!this.cookingList.find(i=>i.type == 'sauce_1')){
+               return false
+           }
+           if(!this.cookingList.find(i=>i.type == 'tomato')){
+               return false
+           }
+           if(!this.cookingList.find(i=>i.type == 'vegetable')){
+               console.log('finish type 1')
+               return true
+           }
+       }else if(this.orderList[0].type == 1){
+           // 1:
+           if(!this.cookingList.find(i=>i.type == 'sauce_2')){
+               return false
+           }
+           if(!this.cookingList.find(i=>i.type == 'tomato')){
+               return false
+           }
+           if(!this.cookingList.find(i=>i.type == 'vegetable')){
+               console.log('finish type 2')
+               return true
+           }
+       }else {
+           // 2:
+           if(!this.cookingList.find(i=>i.type == 'sauce_3')){
+               return false
+           }
+           if(!this.cookingList.find(i=>i.type == 'tomato')){
+               return false
+           }
+           if(!this.cookingList.find(i=>i.type == 'vegetable')){
+               console.log('finish type 3')
+               return true
+           }
+       }
+
+
+        return true
     }
     isInAreaStove = false
     pressingSpace = false
     cookingList = []
     orderList = []
+
     update() {
         // Player movement logic
         //console.log(this.ladderSpeed);
 
+        this.panelAnime()
+
         // 在特定区域内的交互
-        this.isInAreaStove = 380 < this.pixelPlayer.x &&  422 > this.pixelPlayer.x && this.pixelPlayer.y > 400 && this.pixelPlayer.y < 500
-        this.isInAreaTomatoes = 280 < this.pixelPlayer.x &&  322 > this.pixelPlayer.x && this.pixelPlayer.y > 400 && this.pixelPlayer.y < 500
-        this.isInAreaBin = 460 < this.pixelPlayer.x &&  500 > this.pixelPlayer.x && this.pixelPlayer.y > 400 && this.pixelPlayer.y < 500
-        if ( this.cursors.space.isDown) {
+        this.isInAreaStove = 380 < this.pixelPlayer.x && 422 > this.pixelPlayer.x && this.pixelPlayer.y > 400 && this.pixelPlayer.y < 500
+        this.isInAreaTomatoes = 280 < this.pixelPlayer.x && 322 > this.pixelPlayer.x && this.pixelPlayer.y > 400 && this.pixelPlayer.y < 500
+        this.isInAreaBin = 460 < this.pixelPlayer.x && 500 > this.pixelPlayer.x && this.pixelPlayer.y > 400 && this.pixelPlayer.y < 500
+        this.isInFinishOrder = 510 < this.pixelPlayer.x && 580 > this.pixelPlayer.x && this.pixelPlayer.y > 400 && this.pixelPlayer.y < 500
+
+        this.isInToFarm = 0 < this.pixelPlayer.x && 50 > this.pixelPlayer.x
+
+        // this.burgerPanels.anims.play ('updateOrder',true)
+        if (this.cursors.space.isDown) {
 
             // 只进行一次的交互
-            if(!this.pressingSpace) {
+            if (!this.pressingSpace) {
                 // console.log('pressingSpace11111')
                 // todo: 1. choose material 2. add into cookingList
 
-                // 添加番茄
-                if( this.isInAreaTomatoes) {
+                // finish order
+                if (this.isInFinishOrder) {
+                    // todo : 判断 是否可以完成订单
+
+                    if(this.checkCanFinish()){
+                        this.finishOrder()
+                        this.generateOrder()
+                        this.clearCookingList()
+                    }
+
+
                     this.pixelPlayer.anims.play('cooking', true);
-                    this.cookingList.push('tomato')
+                }
+
+                // 添加番茄
+                if (this.isInAreaTomatoes) {
+                    this.pixelPlayer.anims.play('cooking', true);
+                    this.addMaterial('tomato')
+
                 }
 
                 // 垃圾桶
-                if( this.isInAreaBin) {
+                if (this.isInAreaBin) {
                     this.pixelPlayer.anims.play('cooking', true);
-                    this.cookingList = []
+                    this.clearCookingList()
                 }
             }
 
             // -- 灶台持续交互
-            if(this.isInAreaStove ) {
+            if (this.isInAreaStove) {
                 this.pixelPlayer.anims.play('cooking', true);
             }
 
             this.pressingSpace = true
-        }else {
+        } else {
             this.pressingSpace = false
+            this.pixelPlayer.anims.play('run', true);
         }
 
-
-
-
+        // 区域进入 交互
+        if(this.isInToFarm ){
+            this.goToFarm()
+        }
         //
-
 
 
         // Player controls
@@ -201,10 +378,6 @@ class Play extends Phaser.Scene {
         //     localStorage.setItem('highScore', this.survivalTime.toString()); // Store the new high score
         // }
     }
-
-
-    created_arr = []
-    level = 1
 
 
     checkGameOver(player, ladder) {

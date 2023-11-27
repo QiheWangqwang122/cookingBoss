@@ -14,7 +14,7 @@ class Menu extends Phaser.Scene {
 
     create() {
         // Menu text setup
-        this.add.text(400, 100, 'LK KiTCHEN', {
+        this.add.text(400, 100, 'COOKING BOSS', {
           fontSize: '64px',
           fill: '#e07438',
           stroke: '#FFFFFF',
