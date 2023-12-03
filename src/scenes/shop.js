@@ -1,10 +1,14 @@
-class Play extends Phaser.Scene {
+class Shop extends Phaser.Scene {
     constructor() {
-        super('playScene');
-        this.survivalTime = 0;
-        this.score = 0
+        super('playShop');
     }
 
+    preload() {
 
+    }
+
+    create(){}
+
+    update(){}
 
 }
