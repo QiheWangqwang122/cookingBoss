@@ -6,7 +6,7 @@ class Play extends Phaser.Scene {
 
 
     preload() {
-
+        this.load.audio('bgm', './assets/sound/bgm.m4a');
         this.load.spritesheet('player', './assets/player/common.png', {frameWidth: 50, frameHeight: 44});
         this.load.spritesheet('cooking', './assets/player/cooking.png', {frameWidth: 50, frameHeight: 44});
         // // Load an image asset to represent the ground
@@ -17,18 +17,20 @@ class Play extends Phaser.Scene {
         this.load.image('background', './assets/scene/total_scene.png')
         this.load.image('tomatoes', './assets/scene/tomatoes.png')
         this.load.image('vegetables', './assets/scene/vegetables.png')
+        this.load.image('purple_vegetables', './assets/material/purple_vegetables.png')
         this.load.image('building1', './assets/scene/building1.png');
         this.load.image('building2', './assets/scene/building2.png');
         this.load.image('building3', './assets/scene/building3.png');
         this.load.image('building4', './assets/scene/building4.png');
         this.load.image('building5', './assets/scene/building5.png');
-
+        this.load.image('left_scene', './assets/scene/left_scene.png');
         this.load.image('shop', './assets/scene/SHOP.png')
         // panel
         this.load.image('cookingPanel', './assets/panel/cooking_panel.png')
         this.load.image('orderPanel', './assets/panel/order_panel.png')
         this.load.spritesheet('currentOrder', './assets/panel/current_order.png', {frameWidth: 120, frameHeight: 120})
-
+        this.load.image('burgerMenu', './assets/panel/burger_menu.png')
+        this.load.image('green_line', './assets/burger/green_line.png')
         // burger
         this.load.image('burger_0', './assets/burger/burger_1.png')
         this.load.image('burger_1', './assets/burger/burger_2.png')
@@ -41,7 +43,7 @@ class Play extends Phaser.Scene {
         // guest
         this.load.image('guest', './assets/npc/guest.png');
 
-
+        this.load.image('tips', './assets/scene/tips.png');
         // materials
         this.load.image('sauce_1', './assets/material/sauce_1.png')
         this.load.image('sauce_2', './assets/material/sauce_2.png')
@@ -49,7 +51,7 @@ class Play extends Phaser.Scene {
         this.load.image('tomato', './assets/material/tomato2.png')
         this.load.image('vegetable', './assets/material/vegetable.png')
         this.load.image('meat', './assets/material/meat.png')
-
+        this.load.image('purple_vegetable', './assets/material/purple_vegetable.png')
 
         this.load.image('sauce_1_down', './assets/material/sauce_1_down.png')
         this.load.image('sauce_3_down', './assets/material/sauce_3_down.png')
@@ -60,6 +62,10 @@ class Play extends Phaser.Scene {
         // let scene =  this.add.sprite(400, 300, 'kitchen_bg')
         let background = this.add.image(400, 300, 'background')
         background.setScale(1.5)
+
+        this.left_scene = this.add.image(50, 505, 'left_scene')
+        this.tips = this.add.image(700, 385, 'tips')
+
         // scene 场景刚体
         const building = this.physics.add.staticGroup();
         building.create(60, 575, 'building1').setScale(1.5).refreshBody();
@@ -69,7 +75,17 @@ class Play extends Phaser.Scene {
         building.create(735, 580, 'building5').setScale(3.5).refreshBody();
         // building.refreshBody();
         this.kitchen_car = this.add.image(420, 310, 'kitchen_car')
+        if (this.sound.sounds.length > 0 && this.sound.sounds[0].isPlaying) {
 
+        } else {
+            this.sound.play('bgm')
+        }
+
+
+        // this.game.bgm = this.add.audio('bgm')
+        // if (!this.game.bgm.isPlaying) {
+        //     this.game.bgm.play()
+        // }
         // action items (area)
         // stove
         this.stove = this.add.image(400, 410, 'stove')
@@ -79,6 +95,8 @@ class Play extends Phaser.Scene {
         // tomatoes / vegetables
         this.tomatoes = this.add.image(300, 400, 'tomatoes')
         this.vegetables = this.add.image(250, 400, 'vegetables')
+        this.purple_vegetables = this.add.image(350, 400, 'purple_vegetables')
+
 
         // bin
         this.bin = this.add.image(480, 410, 'bin')
@@ -163,7 +181,12 @@ class Play extends Phaser.Scene {
             strokeThickness: 6,
             zIndex: 1000
         }).setOrigin(0.5);
-
+        this.cooking_line = this.add.text(0, 0, '', {
+            fontSize: '16px',
+            fill: '#1d8600',
+            strokeThickness: 5,
+            zIndex: 1000
+        }).setOrigin(1);
         // generateOrder
         if (this.orderList.length != 4) {
             this.generateOrder()
@@ -201,7 +224,7 @@ class Play extends Phaser.Scene {
             }
 
         })
-        console.log(this.orderList)
+        // console.log(this.orderList)
     }
 
     // add material to cooking panel and render
@@ -210,6 +233,7 @@ class Play extends Phaser.Scene {
     // sauce_3
     // tomato
     // vegetable
+    // purple_vegetable
     // meat
     cooking_position = [[750, 55], [750, 100], [750, 145]]
 
@@ -262,7 +286,8 @@ class Play extends Phaser.Scene {
         if (this.game.meatNum > 0 && this.cookingList.length < 3) {
             this.game.meatNum--
             this.addMaterial('meat')
-        }else {
+            this.showNotice('cook meat successful!')
+        } else {
             this.showNotice('cannot add meat')
         }
     }
@@ -272,7 +297,7 @@ class Play extends Phaser.Scene {
             this.game.sauce_1_num--
             this.sauce_1NumText
             this.addMaterial('sauce_1')
-        }else {
+        } else {
             this.showNotice('cannot add sauce')
         }
     }
@@ -281,7 +306,7 @@ class Play extends Phaser.Scene {
         if (this.game.sauce_2_num > 0 && this.cookingList.length < 3) {
             this.game.sauce_2_num--
             this.addMaterial('sauce_2')
-        }else {
+        } else {
             this.showNotice('cannot add sauce')
         }
     }
@@ -290,7 +315,7 @@ class Play extends Phaser.Scene {
         if (this.game.sauce_3_num > 0 && this.cookingList.length < 3) {
             this.game.sauce_3_num--
             this.addMaterial('sauce_3')
-        }else {
+        } else {
             this.showNotice('cannot add sauce')
         }
     }
@@ -333,20 +358,20 @@ class Play extends Phaser.Scene {
 
 
     // 配料表
-    // type 0: burger_1 = sauce_1 + tomato + meat
-    // type 1: burger_2 = sauce_2 + tomato + vegetable
-    // type 2: burger_3 = sauce_3 + tomato + vegetable
+    // type 0: burger_1 = sauce_1 + purple_vegetable + meat
+    // type 1: burger_2 = meat + tomato + vegetable
+    // type 2: burger_3 = sauce_3 + tomato + purple_vegetable
     checkCanFinish() {
         if (this.orderList[0].type == 0) {
             // 0:
             if (!this.cookingList.find(i => i.type == 'sauce_1')) {
                 return false
             }
-            if (!this.cookingList.find(i => i.type == 'tomato')) {
+            if (!this.cookingList.find(i => i.type == 'purple_vegetable')) {
                 return false
             }
             if (!this.cookingList.find(i => i.type == 'meat')) {
-                console.log('finish type 1')
+                // console.log('finish type 1')
                 return true
             }
         } else if (this.orderList[0].type == 1) {
@@ -358,7 +383,7 @@ class Play extends Phaser.Scene {
                 return false
             }
             if (!this.cookingList.find(i => i.type == 'meat')) {
-                console.log('finish type 2')
+                // console.log('finish type 2')
                 return true
             }
         } else {
@@ -369,8 +394,8 @@ class Play extends Phaser.Scene {
             if (!this.cookingList.find(i => i.type == 'tomato')) {
                 return false
             }
-            if (!this.cookingList.find(i => i.type == 'meat')) {
-                console.log('finish type 3')
+            if (!this.cookingList.find(i => i.type == 'purple_vegetable')) {
+                // console.log('finish type 3')
                 return true
             }
         }
@@ -385,30 +410,28 @@ class Play extends Phaser.Scene {
     orderList = []
 
     update() {
-        // Player movement logic
-        //console.log(this.ladderSpeed);
-
+        // refresh panel
         this.panelAnime()
 
-        // 在特定区域内的交互
+        // Judge that the character is in an area or not
         this.isInAreaStove = 380 < this.pixelPlayer.x && 422 > this.pixelPlayer.x && this.pixelPlayer.y > 400 && this.pixelPlayer.y < 500
         this.isInAreaTomatoes = 280 < this.pixelPlayer.x && 322 > this.pixelPlayer.x && this.pixelPlayer.y > 400 && this.pixelPlayer.y < 500
         this.isInAreaVegetables = 230 < this.pixelPlayer.x && 272 > this.pixelPlayer.x && this.pixelPlayer.y > 400 && this.pixelPlayer.y < 500
+        this.isInAreaPurpleVegetables = 350 < this.pixelPlayer.x && 372 > this.pixelPlayer.x && this.pixelPlayer.y > 400 && this.pixelPlayer.y < 500
         this.isInAreaBin = 460 < this.pixelPlayer.x && 500 > this.pixelPlayer.x && this.pixelPlayer.y > 400 && this.pixelPlayer.y < 500
         this.isInFinishOrder = 510 < this.pixelPlayer.x && 580 > this.pixelPlayer.x && this.pixelPlayer.y > 400 && this.pixelPlayer.y < 500
-
+        this.isInAreaTips = 680 < this.pixelPlayer.x && 720 > this.pixelPlayer.x && this.pixelPlayer.y > 300 && this.pixelPlayer.y < 450
         this.isInAreaSauce1 = 360 < this.pixelPlayer.x && 390 > this.pixelPlayer.x && this.pixelPlayer.y > 300 && this.pixelPlayer.y < 350
-        this.isInAreaSauce3 = 400 < this.pixelPlayer.x && 440 > this.pixelPlayer.x && this.pixelPlayer.y > 300 && this.pixelPlayer.y < 350
+        this.isInAreaSauce3 = 400 < this.pixelPlayer.x && 440 > this.pixelPlayer.x && this.pixelPlayer.y > 300 && this.pixelPlayer.y < 400
         this.isInToFarm = 0 < this.pixelPlayer.x && 50 > this.pixelPlayer.x
 
-        // this.burgerPanels.anims.play ('updateOrder',true)
+        // space action
         if (this.cursors.space.isDown) {
 
-
-            // 只进行一次的交互
+            // the action which play just once
             if (!this.pressingSpace) {
                 // console.log('pressingSpace11111')
-                console.log('player x y ', this.pixelPlayer.x, this.pixelPlayer.y)
+                // console.log('player x y ', this.pixelPlayer.x, this.pixelPlayer.y)
                 // this.showNotice('test')
                 // finish order
                 if (this.isInFinishOrder) {
@@ -418,7 +441,7 @@ class Play extends Phaser.Scene {
                         this.generateOrder()
                         this.clearCookingList()
                     } else {
-                        this.showNotice("cannot finish order")
+                        this.showNotice("He doesn't like this burger!")
                     }
 
 
@@ -428,15 +451,18 @@ class Play extends Phaser.Scene {
                 // add tomato to cooking list
                 if (this.isInAreaTomatoes) {
                     this.pixelPlayer.anims.play('cooking', true);
-                    this.addMaterial('tomato')
-
+                    this.animeCooking(5, _ => this.addMaterial('tomato'))
                 }
 
                 // add vegetable to cooking list
                 if (this.isInAreaVegetables) {
                     this.pixelPlayer.anims.play('cooking', true);
-                    this.addMaterial('vegetable')
+                    this.animeCooking(5, _ => this.addMaterial('vegetable'))
+                }
+                if (this.isInAreaPurpleVegetables) {
+                    this.pixelPlayer.anims.play('cooking', true);
 
+                    this.animeCooking(5, _ => this.addMaterial('purple_vegetable'))
                 }
 
                 // bin: throw all material in cooking list
@@ -451,7 +477,8 @@ class Play extends Phaser.Scene {
                 // stove : cooking meat and add into cooking list
                 if (this.isInAreaStove) {
                     this.pixelPlayer.anims.play('cooking', true);
-                    this.cookMeat()
+                    this.animeCooking(8, _ => this.cookMeat())
+                    // this.cookMeat()
                 }
                 if (this.isInAreaSauce1) {
                     console.log('use sauce_1')
@@ -463,10 +490,15 @@ class Play extends Phaser.Scene {
                     this.pixelPlayer.anims.play('cooking', true);
                     this.useSauce3()
                 }
+                if (this.isInAreaTips) {
+                    console.log('show tips')
+                    this.showTips()
+                }
+
 
             }
 
-            // -- 持续交互
+            // -- Constant interaction
             // if (this.isInAreaStove) {
             //     this.pixelPlayer.anims.play('cooking', true);
             //
@@ -476,6 +508,9 @@ class Play extends Phaser.Scene {
         } else {
             this.pressingSpace = false
             this.pixelPlayer.anims.play('run', true);
+            this.closeTips()
+            this.destroyCookingLine()
+
         }
 
         // go to other area
@@ -494,8 +529,8 @@ class Play extends Phaser.Scene {
             this.pixelPlayer.flipX = false; // Use the original sprite orientation
         } else {
             this.pixelPlayer.setVelocityX(0);
-            // If you have a 'stand' animation, you could switch to it here
-            // this.pixelPlayer.anims.play('stand');
+
+
         }
 
         if (this.cursors.up.isDown && this.pixelPlayer.body.touching.down) {
@@ -507,9 +542,69 @@ class Play extends Phaser.Scene {
 
     addScore(num) {
         this.game.score += num
-        this.showNotice('+' + num)
+        let text =''
+        if (num>0){
+            text = '+' + num
+        }else {
+            text = num
+        }
+        this.showNotice(text)
     }
 
+    burgerMenu
+
+    showTips() {
+        this.burgerMenu = this.add.image(380, 350, 'burgerMenu')
+
+    }
+
+    cook_time = 5
+    cooking_line
+    cooking = false
+    cookingInterval
+    // when cooking material, show seconds it needs
+    // material : meat / tomato / vegetable / purple_vegetable
+    animeCooking(time, successCb = () => {
+    }) {
+        // show cooking green_line
+        this.cook_time = time // s
+        console.log(this.cooking_line)
+        this.cooking_line.x = this.pixelPlayer.x + 5
+        this.cooking_line.y = this.pixelPlayer.y - 25
+        this.cooking_line.text = this.cook_time
+        this.cook_time--
+        this.cookingInterval = setInterval(() => {
+            this.cooking_line.text = this.cook_time
+            this.cook_time--
+            if (this.cook_time < 0) {
+                this.cooking_line.text = ''
+                successCb()
+
+                clearInterval(this.cookingInterval)
+            }
+        }, 1000)
+    }
+
+    //
+    destroyCookingLine() {
+        try {
+            this.cook_time = 5
+            this.cooking_line.text = ''
+            clearInterval(this.cookingInterval)
+        } catch (e) {
+
+        }
+
+    }
+    // display tips :off
+    closeTips() {
+        try {
+            this.burgerMenu.destroy()
+        } catch (e) {
+
+        }
+    }
+    // display tips :on
     showNotice(text) {
         let x = this.pixelPlayer.x
         let y = this.pixelPlayer.y - 50
@@ -531,35 +626,8 @@ class Play extends Phaser.Scene {
         }, 1000)
     }
 
-    updateCountdown() {
-
-        // this.survivalTime += 1; // Increment the survival time by 1 second
-        // let highScore = localStorage.getItem('highScore') ? parseInt(localStorage.getItem('highScore'), 10) : 0;
-        // sessionStorage.setItem('survivalTime',this.survivalTime)
-        // // Update the timer text to reflect the new survival time
-        // this.timerText.setText('Survived: ' + this.survivalTime + 's');
-        //
-        // // Check if the current survival time is greater than the high score
-        // if (this.survivalTime > highScore) {
-        //     console.log(this.survivalTime,highScore);
-        //     localStorage.setItem('highScore', this.survivalTime.toString()); // Store the new high score
-        // }
-    }
 
 
-    checkGameOver(player, ladder) {
-        // Stop all movements
-        this.physics.pause();
-        player.setTint(0xff0000); // Optionally tint the player red to indicate damage
-
-        // Stop the player's animations
-        player.anims.stop();
-        this.GameOver = true;
-        // Transition to the Game Over scene after a short delay
-        this.time.delayedCall(1000, () => {
-            this.scene.start('GameOverscene'); // Replace 'gameOverScene' with your actual game over scene key
-        }, [], this);
-    }
 
 
 }

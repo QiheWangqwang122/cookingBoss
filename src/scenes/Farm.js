@@ -108,10 +108,10 @@ class Farm extends Phaser.Scene {
             // 只进行一次的交互
             if (!this.pressingSpace) {
 
-                console.log('player x y ', this.pixelPlayer.x, this.pixelPlayer.y)
+                // console.log('player x y ', this.pixelPlayer.x, this.pixelPlayer.y)
                 // cow
                 if (this.isInAreaCow) {
-                    console.log('in area')
+                    // console.log('in area')
                     this.pixelPlayer.anims.play('attack', true);
                     this.game.meatNum = this.game.meatNum + 1
                 }
