@@ -7,10 +7,11 @@ class Farm extends Phaser.Scene {
 
         // this.load.spritesheet('player', './assets/PlayerRunning.png', { frameWidth: 32, frameHeight: 64 });
         // // Load an image asset to represent the ground
-        this.load.image('meat', './assets/material/tomato2.png')
+
         this.load.spritesheet('cow', './assets/npc/cow.png', {frameWidth: 60, frameHeight: 60});
         this.load.image('platForm', './assets/scene/platform.png')
         this.load.image('platForm_long', './assets/scene/platForm_long.png')
+        this.load.spritesheet('attack', './assets/player/attack.png',{frameWidth: 50, frameHeight: 46})
     }
 
     create() {
@@ -31,7 +32,7 @@ class Farm extends Phaser.Scene {
         // ground.create(400, 700, 'platForm').setScale(1).refreshBody();
         this.anims.create({
             key: 'attack',
-            frames: this.anims.generateFrameNumbers('attack', {start: 0, end: 6}),
+            frames: this.anims.generateFrameNumbers('attack', {start: 0, end: 4}),
             frameRate: 10,// framerates
             repeat: -1
         });
@@ -48,8 +49,8 @@ class Farm extends Phaser.Scene {
         this.physics.add.collider(this.cow, ground);
 
         this.meat = this.add.image(50, 50, 'meat')
-        this.meat.setScale(3)
-        this.meatNumText = this.add.text(120, 50, `X ${this.meatNum}`, {
+        this.meat.setScale(1.8)
+        this.meatNumText = this.add.text(120, 50, `X ${this.game.meatNum}`, {
             fontSize: '32px',
             fill: '#e07438',
             strokeThickness: 6,
@@ -57,12 +58,13 @@ class Farm extends Phaser.Scene {
         }).setOrigin(0.5);
     }
 
-    meatNum = 0
+
     meatNumText
 
     showMeatNum() {
         // console.log(this.meatNum)
-        this.meatNumText.text = `X ${this.meatNum}`
+        this.meatNumText.text = `X ${this.game.meatNum}`
+
     }
 
 
@@ -99,19 +101,19 @@ class Farm extends Phaser.Scene {
         }
 
         // space controls
-        this.isInAreaCow = 350 < this.pixelPlayer.x && 431 > this.pixelPlayer.x && this.pixelPlayer.y > 240 && this.pixelPlayer.y < 300
+        this.isInAreaCow = 300 < this.pixelPlayer.x && 431 > this.pixelPlayer.x && this.pixelPlayer.y > 240 && this.pixelPlayer.y < 300
         if (this.cursors.space.isDown) {
 
 
             // 只进行一次的交互
             if (!this.pressingSpace) {
-                // console.log('pressingSpace11111')
-                console.log('player x y ', this.pixelPlayer.x, this.pixelPlayer.y)
+
+                // console.log('player x y ', this.pixelPlayer.x, this.pixelPlayer.y)
                 // cow
                 if (this.isInAreaCow) {
-                    console.log('add meat')
-                    this.pixelPlayer.anims.play('cooking', true);
-                    this.meatNum = this.meatNum + 1
+                    // console.log('in area')
+                    this.pixelPlayer.anims.play('attack', true);
+                    this.game.meatNum = this.game.meatNum + 1
                 }
             }
 
