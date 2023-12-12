@@ -56,9 +56,22 @@ class Farm extends Phaser.Scene {
             strokeThickness: 6,
             zIndex: 1000
         }).setOrigin(0.5);
+
+
+        //===============GameOverEvent==============
+        this.timerText = this.add.text(16, this.sys.game.config.height / 5, 'Countdown:'+this.game.survivalTime, {
+            fontSize: '32px',
+            fill: '#fff'
+        });
+        this.time.addEvent({
+            delay: 1000,
+            callback: this.updateCountdown,
+            callbackScope: this,
+            loop: true
+        });
     }
 
-    meatNum = 0
+
     meatNumText
 
     showMeatNum() {
@@ -111,9 +124,14 @@ class Farm extends Phaser.Scene {
                 // console.log('player x y ', this.pixelPlayer.x, this.pixelPlayer.y)
                 // cow
                 if (this.isInAreaCow) {
-                    console.log('add meat')
-                    this.pixelPlayer.anims.play('cooking', true);
-                    this.meatNum = this.meatNum + 1
+                    // console.log('in area')
+                    this.pixelPlayer.anims.play('attack', true);
+                    this.cow.setTint(0xff0000);
+                    setTimeout(_=>{
+                        this.cow .clearTint();
+                    },500)
+
+                    this.game.meatNum = this.game.meatNum + 1
                 }
             }
 
