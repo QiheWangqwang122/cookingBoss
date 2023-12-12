@@ -56,6 +56,19 @@ class Farm extends Phaser.Scene {
             strokeThickness: 6,
             zIndex: 1000
         }).setOrigin(0.5);
+
+
+        //===============GameOverEvent==============
+        this.timerText = this.add.text(16, this.sys.game.config.height / 5, 'Countdown:'+this.game.survivalTime, {
+            fontSize: '32px',
+            fill: '#fff'
+        });
+        this.time.addEvent({
+            delay: 1000,
+            callback: this.updateCountdown,
+            callbackScope: this,
+            loop: true
+        });
     }
 
 
@@ -113,6 +126,11 @@ class Farm extends Phaser.Scene {
                 if (this.isInAreaCow) {
                     // console.log('in area')
                     this.pixelPlayer.anims.play('attack', true);
+                    this.cow.setTint(0xff0000);
+                    setTimeout(_=>{
+                        this.cow .clearTint();
+                    },500)
+
                     this.game.meatNum = this.game.meatNum + 1
                 }
             }
@@ -131,5 +149,26 @@ class Farm extends Phaser.Scene {
         // 数据展示
 
         this.showMeatNum()
+
     }
+
+    updateCountdown() {
+        console.log('this.game.survivalTime',this.game.survivalTime)
+        // Check the survival time > 0
+        if (this.game.survivalTime >= 0) {
+            this.game.survivalTime -= 1; // Increment the survival time by 1 second
+            this.timerText.text = 'Countdown:'+this.game.survivalTime
+        } else {
+            // Game over
+            this.game.GameOver = true;
+            this.releaseScenes()
+            this.time.delayedCall(1000, () => {
+                this.scene.start('GameOverscene'); // Replace 'gameOverScene' with your actual game over scene key
+            }, [], this);
+        }
+    }
+    releaseScenes(){
+
+    }
+
 }

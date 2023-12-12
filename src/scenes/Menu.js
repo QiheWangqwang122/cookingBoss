@@ -27,10 +27,15 @@ class Menu extends Phaser.Scene {
             fill: '#FFF'
         }).setOrigin(0.5);
 
-        this.describeText = this.add.text(200, 400, 'How to play the game', {
+        this.describeText = this.add.text(200, 380, 'How to play the game', {
             fontSize: '24px',
             fill: '#FFF',
 
+        }).setOrigin(0.5);
+
+        this.creditText = this.add.text(200, 460, 'Credit', {
+            fontSize: '24px',
+            fill: '#FFF',
         }).setOrigin(0.5);
 
         // scene
@@ -43,7 +48,9 @@ class Menu extends Phaser.Scene {
         const cursorPadding = 30;
         const playTextCursorX = this.playText.x + this.playText.width / 2 + cursorPadding;
         const describeTextCursorX = this.describeText.x + this.describeText.width / 2 + cursorPadding;
-
+        const creditTextCursorX = this.creditText.x + this.creditText.width / 2 + cursorPadding;
+       this. optionsX = [playTextCursorX,describeTextCursorX,creditTextCursorX]
+        this. optionsY = [this.playText.y,this.describeText.y,this.creditText.y]
         // Cursor setup
         this.cursor = this.add.image(playTextCursorX, this.playText.y, 'cursor');
 
@@ -58,18 +65,30 @@ class Menu extends Phaser.Scene {
 
         // Enter key setup
         this.enterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
-
+        this.game.survivalTime = 120
     }
 
     update() {
         // Move cursor between options
-        if (Phaser.Input.Keyboard.JustDown(this.cursors.down) && this.currentSelection === 0) {
-            this.cursor.setPosition(this.cursorInitialX, this.describeText.y);
+        if (Phaser.Input.Keyboard.JustDown(this.cursors.down) ) {
+            if( this.currentSelection === 0){
+                this.currentSelection ++
+            }else if( this.currentSelection === 1){
+                this.currentSelection ++
+            }else {
+                this.currentSelection = 0
+            }
+            this.cursor.setPosition(this.optionsX[this.currentSelection] , this.optionsY[this.currentSelection]);
             this.sound.play('cursorSound');
-            this.currentSelection = 1;
-        } else if (Phaser.Input.Keyboard.JustDown(this.cursors.up) && this.currentSelection === 1) {
-            this.cursor.setPosition(this.cursorInitialX, this.playText.y);
-            this.currentSelection = 0;
+        } else if (Phaser.Input.Keyboard.JustDown(this.cursors.up)) {
+            if (this.currentSelection === 0) {
+                this.currentSelection = 2
+            } else if (this.currentSelection === 1) {
+                this.currentSelection--
+            } else {
+                this.currentSelection--
+            }
+            this.cursor.setPosition(this.optionsX[this.currentSelection], this.optionsY[this.currentSelection]);
             this.sound.play('cursorSound');
         }
 
@@ -81,23 +100,36 @@ class Menu extends Phaser.Scene {
                 this.reSetAndPlayGame()
                 // clear last score
 
-            } else {
+            } else if(this.currentSelection === 1){
                 // Show how to play
                 this.scene.start('describeScene');
-
+                console.log('describeScene')
+            }else {
+                this.scene.start('creditScene');
+                console.log('creditScene')
             }
         }
     }
 
-    // reset and play
+    // init and play
     reSetAndPlayGame() {
         this.game.meatNum = 0
         this.game.sauce_1_num = 99
         this.game.sauce_2_num = 99
         this.game.sauce_3_num = 99
-
         this.game.score = 0
         this.scene.start('playScene');
+        this.game.survivalTime = 120 // a game has 120s as base survivalTime
+        //===============GameOverEvent==============
+        this.game.GameOver = false;
+
+
+
+    }
+
+
+    releaseScenes(){
+
     }
 
 }
