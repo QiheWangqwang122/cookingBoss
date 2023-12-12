@@ -74,21 +74,9 @@ class Play extends Phaser.Scene {
         // building.create(688, 563, 'building4').setScale(1.5).refreshBody();
         building.create(735, 580, 'building5').setScale(3.5).refreshBody();
         // building.refreshBody();
-        this.kitchen_car = this.add.image(420, 310, 'kitchen_car')
-        if (this.sound.sounds.length > 0 && this.sound.sounds[0].isPlaying) {
-
-        } else {
-            this.sound.play('bgm')
-        }
 
 
-
-
-        // this.game.bgm = this.add.audio('bgm')
-        // if (!this.game.bgm.isPlaying) {
-        //     this.game.bgm.play()
-        // }
-        // action items (area)
+        // 交互物品
         // stove
         this.stove = this.add.image(400, 410, 'stove')
 
@@ -176,44 +164,12 @@ class Play extends Phaser.Scene {
         this.orderPanel3.setScale(0.5)
         this.orderPanel4.setScale(0.5)
 
-        // score
-        this.score = this.add.text(400, 50, `SCORE : ${this.game.score}`, {
-            fontSize: '24px',
-            fill: '#e07438',
-            strokeThickness: 6,
-            zIndex: 1000
-        }).setOrigin(0.5);
-        this.cooking_line = this.add.text(0, 0, '', {
-            fontSize: '16px',
-            fill: '#1d8600',
-            strokeThickness: 5,
-            zIndex: 1000
-        }).setOrigin(1);
-        // generateOrder
-        if (this.orderList.length != 4) {
-            this.generateOrder()
-            this.generateOrder()
-            this.generateOrder()
-            this.generateOrder()
-        }
-        // try refresh cooking list
-        this.refreshShowCookingList()
-        this.refreshShowOrderList()
-
-
-        //===============GameOverEvent==============
-        this.timerText = this.add.text(16, this.sys.game.config.height / 5, 'Countdown:'+this.game.survivalTime, {
-            fontSize: '32px',
-            fill: '#fff'
-        });
-        this.time.addEvent({
-            delay: 1000,
-            callback: this.updateCountdown,
-            callbackScope: this,
-            loop: true
-        });
+        // 生成订单
+        this.generateOrder()
+        this.generateOrder()
+        this.generateOrder()
+        this.generateOrder()
     }
-
 
     order_position = [[50, 50], [120, 50], [190, 50], [260, 50]]
 
@@ -364,8 +320,7 @@ class Play extends Phaser.Scene {
     finishOrder() {
         // this.burgerPanels.destroy()
         this.orderList.shift()
-        this.addTime(20)
-        this.addScore(100)
+
     }
 
     goToFarm() {
@@ -484,10 +439,6 @@ class Play extends Phaser.Scene {
                 // bin: throw all material in cooking list
                 if (this.isInAreaBin) {
                     this.pixelPlayer.anims.play('cooking', true);
-                    if (this.game.score > 10) {
-                        this.addScore(-10)
-                        this.addTime(-10)
-                    }
                     this.clearCookingList()
                 }
 
@@ -553,157 +504,38 @@ class Play extends Phaser.Scene {
         if (this.cursors.up.isDown && this.pixelPlayer.body.touching.down) {
             this.pixelPlayer.setVelocityY(-300);
         }
-        this.showMaterialNum()
-
-        this.showSurvivalTime()
-    }
-
-    showSurvivalTime() {
-        console.log(this.game.survivalTime)
-
-    }
-
-    // checkGameOver(player) {
-    //     // Stop all movements
-    //     this.physics.pause();
-    //     player.setTint(0xff0000); // Optionally tint the player red to indicate damage
-    //
-    //     // Stop the player's animations
-    //     player.anims.stop();
-    //     this.GameOver = true;
-    //     // Transition to the Game Over scene after a short delay
-    //     this.time.delayedCall(1000, () => {
-    //         this.scene.start('GameOverscene'); // Replace 'gameOverScene' with your actual game over scene key
-    //     }, [], this);
-    // }
-    //
-    // updateCountdown() {
-    //     this.survivalTime += 1; // Increment the survival time by 1 second
-    //     let highScore = localStorage.getItem('highScore') ? parseInt(localStorage.getItem('highScore'), 10) : 0;
-    //     sessionStorage.setItem('survivalTime', this.survivalTime)
-    //     // Update the timer text to reflect the new survival time
-    //     this.timerText.setText('Survived: ' + this.survivalTime + 's');
-    //
-    //     // Check if the current survival time is greater than the high score
-    //     if (this.survivalTime > highScore) {
-    //         console.log(this.survivalTime, highScore);
-    //         localStorage.setItem('highScore', this.survivalTime.toString()); // Store the new high score
-    //     }
-    // }
 
 
-    addScore(num) {
-        this.game.score += num
-        let text = ''
-        if (num > 0) {
-            text = '+' + num
-        } else {
-            text = num
-        }
-        this.showNotice(text)
-    }
-
-
-    addTime(second = 0){
-        this.game.survivalTime += second
-    }
-    burgerMenu
-
-    showTips() {
-        this.burgerMenu = this.add.image(380, 350, 'burgerMenu')
-
-    }
-
-    cook_time = 5
-    cooking_line
-    cooking = false
-    cookingInterval
-    // when cooking material, show seconds it needs
-    // material : meat / tomato / vegetable / purple_vegetable
-    animeCooking(time, successCb = () => {
-    }) {
-        // show cooking green_line
-        this.cook_time = time // s
-        console.log(this.cooking_line)
-        this.cooking_line.x = this.pixelPlayer.x + 5
-        this.cooking_line.y = this.pixelPlayer.y - 25
-        this.cooking_line.text = this.cook_time
-        this.cook_time--
-        this.cookingInterval = setInterval(() => {
-            this.cooking_line.text = this.cook_time
-            this.cook_time--
-            if (this.cook_time < 0) {
-                this.cooking_line.text = ''
-                successCb()
-
-                clearInterval(this.cookingInterval)
-            }
-        }, 1000)
-    }
-
-    //
-    destroyCookingLine() {
-        try {
-            this.cook_time = 5
-            this.cooking_line.text = ''
-            clearInterval(this.cookingInterval)
-        } catch (e) {
-
-        }
-
-    }
-
-    // display tips :off
-    closeTips() {
-        try {
-            this.burgerMenu.destroy()
-        } catch (e) {
-
-        }
-    }
-
-    // display tips :on
-    showNotice(text) {
-        let x = this.pixelPlayer.x
-        let y = this.pixelPlayer.y - 50
-        try {
-            this.notice.destroy()
-        } catch (e) {
-
-        }
-
-        this.notice = this.add.text(x, y, text, {
-            fontSize: '16px',
-            fill: '#ffffff',
-            strokeThickness: 1,
-            zIndex: 1000
-        }).setOrigin(1);
-
-        setTimeout(_ => {
-            this.notice.text = ''
-        }, 1000)
     }
 
     updateCountdown() {
-        // console.log('this.game.survivalTime', this.game.survivalTime)
-        // Check the survival time > 0
-        if (this.game.survivalTime >= 0) {
-            this.game.survivalTime -= 1; // Increment the survival time by 1 second
-            this.timerText.text = 'Countdown:'+this.game.survivalTime
-        } else {
-            // Game over
-            this.game.GameOver = true;
-            this.releaseScenes()
-            this.time.delayedCall(1000, () => {
-                this.scene.start('GameOverscene'); // Replace 'gameOverScene' with your actual game over scene key
-            }, [], this);
-        }
+
+        // this.survivalTime += 1; // Increment the survival time by 1 second
+        // let highScore = localStorage.getItem('highScore') ? parseInt(localStorage.getItem('highScore'), 10) : 0;
+        // sessionStorage.setItem('survivalTime',this.survivalTime)
+        // // Update the timer text to reflect the new survival time
+        // this.timerText.setText('Survived: ' + this.survivalTime + 's');
+        //
+        // // Check if the current survival time is greater than the high score
+        // if (this.survivalTime > highScore) {
+        //     console.log(this.survivalTime,highScore);
+        //     localStorage.setItem('highScore', this.survivalTime.toString()); // Store the new high score
+        // }
     }
 
-    releaseScenes() {
+
+    checkGameOver(player, ladder) {
+        // Stop all movements
         this.physics.pause();
-        this.sound.stopAll();
-        this.pixelPlayer.anims.stop();
+        player.setTint(0xff0000); // Optionally tint the player red to indicate damage
+
+        // Stop the player's animations
+        player.anims.stop();
+        this.GameOver = true;
+        // Transition to the Game Over scene after a short delay
+        this.time.delayedCall(1000, () => {
+            this.scene.start('GameOverscene'); // Replace 'gameOverScene' with your actual game over scene key
+        }, [], this);
     }
 
 
