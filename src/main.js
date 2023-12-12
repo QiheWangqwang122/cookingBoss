@@ -13,7 +13,7 @@ const config = {
         debug: false
       }
     },
-    scene: [Menu, Play, GameOver, Farm, Shop, GameDescribe, Credit]  // assuming you have a Menu scene as well
+    scene: [Menu, Play, GameOver, Farm, GameDescribe, Credit]  // assuming you have a Menu scene as well
   };
   
   const game = new Phaser.Game(config);
