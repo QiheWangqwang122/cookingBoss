@@ -30,7 +30,7 @@ class Play extends Phaser.Scene {
         this.load.image('orderPanel', './assets/panel/order_panel.png')
         this.load.spritesheet('currentOrder', './assets/panel/current_order.png', {frameWidth: 120, frameHeight: 120})
         this.load.image('burgerMenu', './assets/panel/burger_menu.png')
-        this.load.image('green_line', './assets/burger/green_line.png')
+
         // burger
         this.load.image('burger_0', './assets/burger/burger_1.png')
         this.load.image('burger_1', './assets/burger/burger_2.png')
@@ -55,6 +55,7 @@ class Play extends Phaser.Scene {
 
         this.load.image('sauce_1_down', './assets/material/sauce_1_down.png')
         this.load.image('sauce_3_down', './assets/material/sauce_3_down.png')
+        this.load.atlas('scoreAtlas', './assets/atlas/scoreAtlas.png', './assets/atlas/scoreAtlas.json');
     }
 
     create() {
@@ -81,8 +82,29 @@ class Play extends Phaser.Scene {
             this.sound.play('bgm')
         }
 
+        // atlas effect used for add score
+        // const emitter = this.add.particles(0, 0, 'scoreAtlas', {
+        //     frame: ['red', 'yellow', 'green'],
+        //     lifespan: 4000,
+        //     speed: {min: 50, max: 50},
+        //     scale: {start: 0.8, end: 0},
+        //     gravityY: 150,
+        //     blendMode: 'ADD',
+        //     emitting: false
+        // });
+       this.emitter = this.add.particles(100, 100, 'scoreAtlas', {
+            frame: { frames: ['scoreAtlas-2.png', 'scoreAtlas-0.png', 'scoreAtlas-1.png'], cycle: true },
+            lifespan: 3000,
+            speed: {min: 50, max: 50},
+            scale: {start: 0.8, end: 0},
+            gravityY: 0,
+            blendMode: 'ADD',
+            emitting: false
+        });
 
-
+        // this.input.on('pointerdown', pointer => {
+        //     this. emitter.explode(16);
+        // });
 
         // this.game.bgm = this.add.audio('bgm')
         // if (!this.game.bgm.isPlaying) {
@@ -202,7 +224,7 @@ class Play extends Phaser.Scene {
 
 
         //===============GameOverEvent==============
-        this.timerText = this.add.text(16, this.sys.game.config.height / 5, 'Countdown:'+this.game.survivalTime, {
+        this.timerText = this.add.text(16, this.sys.game.config.height / 5, 'Countdown:' + this.game.survivalTime, {
             fontSize: '32px',
             fill: '#fff'
         });
@@ -366,6 +388,7 @@ class Play extends Phaser.Scene {
         this.orderList.shift()
         this.addTime(20)
         this.addScore(100)
+        this.game.cookedBurgers +=1
     }
 
     goToFarm() {
@@ -386,7 +409,7 @@ class Play extends Phaser.Scene {
             if (!this.cookingList.find(i => i.type == 'purple_vegetable')) {
                 return false
             }
-            if (!this.cookingList.find(i => i.type == 'meat')) {
+            if (this.cookingList.find(i => i.type == 'meat')) {
                 // console.log('finish type 1')
                 return true
             }
@@ -398,7 +421,7 @@ class Play extends Phaser.Scene {
             if (!this.cookingList.find(i => i.type == 'vegetable')) {
                 return false
             }
-            if (!this.cookingList.find(i => i.type == 'meat')) {
+            if (this.cookingList.find(i => i.type == 'meat')) {
                 // console.log('finish type 2')
                 return true
             }
@@ -407,10 +430,10 @@ class Play extends Phaser.Scene {
             if (!this.cookingList.find(i => i.type == 'sauce_3')) {
                 return false
             }
-            if (!this.cookingList.find(i => i.type == 'tomato')) {
+            if (!this.cookingList.find(i => i.type == 'meat')) {
                 return false
             }
-            if (!this.cookingList.find(i => i.type == 'purple_vegetable')) {
+            if (this.cookingList.find(i => i.type == 'purple_vegetable')) {
                 // console.log('finish type 3')
                 return true
             }
@@ -555,11 +578,11 @@ class Play extends Phaser.Scene {
         }
         this.showMaterialNum()
 
-        this.showSurvivalTime()
+        // this.showSurvivalTime()
     }
 
     showSurvivalTime() {
-        console.log(this.game.survivalTime)
+        // console.log(this.game.survivalTime)
 
     }
 
@@ -600,13 +623,19 @@ class Play extends Phaser.Scene {
         } else {
             text = num
         }
+        let x = this.pixelPlayer.x
+        let y = this.pixelPlayer.y - 50
+        this.emitter.x = x
+        this.emitter.y = y
+        this.emitter.explode(16);
         this.showNotice(text)
     }
 
 
-    addTime(second = 0){
+    addTime(second = 0) {
         this.game.survivalTime += second
     }
+
     burgerMenu
 
     showTips() {
@@ -687,16 +716,15 @@ class Play extends Phaser.Scene {
     updateCountdown() {
         // console.log('this.game.survivalTime', this.game.survivalTime)
         // Check the survival time > 0
-        if (this.game.survivalTime >= 0) {
+        if (this.game.survivalTime > 0) {
             this.game.survivalTime -= 1; // Increment the survival time by 1 second
-            this.timerText.text = 'Countdown:'+this.game.survivalTime
+            this.timerText.text = 'Countdown:' + this.game.survivalTime
         } else {
             // Game over
             this.game.GameOver = true;
             this.releaseScenes()
-            this.time.delayedCall(1000, () => {
-                this.scene.start('GameOverscene'); // Replace 'gameOverScene' with your actual game over scene key
-            }, [], this);
+            this.scene.start('GameOverscene');
+
         }
     }
 

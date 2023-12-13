@@ -1,0 +1,95 @@
+{
+	"textures": [
+		{
+			"image": "scoreAtlas.png",
+			"format": "RGBA8888",
+			"size": {
+				"w": 46,
+				"h": 105
+			},
+			"scale": 1,
+			"frames": [
+				{
+					"filename": "scoreAtlas/scoreAtlas-2.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 45,
+						"h": 35
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 1,
+						"w": 44,
+						"h": 33
+					},
+					"frame": {
+						"x": 1,
+						"y": 1,
+						"w": 44,
+						"h": 33
+					},
+					"anchor": {
+						"x": 0.5,
+						"y": 0.5
+					}
+				},
+				{
+					"filename": "scoreAtlas/scoreAtlas-0.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 45,
+						"h": 35
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 1,
+						"w": 43,
+						"h": 33
+					},
+					"frame": {
+						"x": 1,
+						"y": 36,
+						"w": 43,
+						"h": 33
+					},
+					"anchor": {
+						"x": 0.5,
+						"y": 0.5
+					}
+				},
+				{
+					"filename": "scoreAtlas/scoreAtlas-1.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 45,
+						"h": 35
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 1,
+						"w": 43,
+						"h": 33
+					},
+					"frame": {
+						"x": 1,
+						"y": 71,
+						"w": 43,
+						"h": 33
+					},
+					"anchor": {
+						"x": 0.5,
+						"y": 0.5
+					}
+				}
+			]
+		}
+	],
+	"meta": {
+		"app": "https://www.codeandweb.com/texturepacker",
+		"version": "3.0",
+		"smartupdate": "$TexturePacker:SmartUpdate:3a64f898e2f5a9523ccd652f996e623f:e0188947e3add3805a03fdb4d7e109d0:ce93a3da091f438bd9031f39b7a65da9$"
+	}
+}

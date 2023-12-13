@@ -118,6 +118,7 @@ class Menu extends Phaser.Scene {
         this.game.sauce_2_num = 99
         this.game.sauce_3_num = 99
         this.game.score = 0
+        this.game.cookedBurgers = 0
         this.scene.start('playScene');
         this.game.survivalTime = 120 // a game has 120s as base survivalTime
         //===============GameOverEvent==============
