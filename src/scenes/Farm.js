@@ -7,11 +7,11 @@ class Farm extends Phaser.Scene {
 
         // this.load.spritesheet('player', './assets/PlayerRunning.png', { frameWidth: 32, frameHeight: 64 });
         // // Load an image asset to represent the ground
-
+        this.load.audio('attack_cow', './assets/sound/attack_cow.wav');
         this.load.spritesheet('cow', './assets/npc/cow.png', {frameWidth: 60, frameHeight: 60});
         this.load.image('platForm', './assets/scene/platform.png')
         this.load.image('platForm_long', './assets/scene/platForm_long.png')
-        this.load.spritesheet('attack', './assets/player/attack.png',{frameWidth: 50, frameHeight: 46})
+        this.load.spritesheet('attack', './assets/player/attack.png', {frameWidth: 50, frameHeight: 46})
     }
 
     create() {
@@ -59,7 +59,7 @@ class Farm extends Phaser.Scene {
 
 
         //===============GameOverEvent==============
-        this.timerText = this.add.text(16, this.sys.game.config.height / 5, 'Countdown:'+this.game.survivalTime, {
+        this.timerText = this.add.text(16, this.sys.game.config.height / 5, 'Countdown:' + this.game.survivalTime, {
             fontSize: '32px',
             fill: '#fff'
         });
@@ -69,6 +69,7 @@ class Farm extends Phaser.Scene {
             callbackScope: this,
             loop: true
         });
+        this.canGetMeat = 3 // the num of meat can be get each scene
     }
 
 
@@ -83,13 +84,17 @@ class Farm extends Phaser.Scene {
 
     pressingSpace = false
 
+    playing_attack_sound =false
     update() {
 
 
         this.isInToFarm = 750 < this.pixelPlayer.x && 800 > this.pixelPlayer.x
 
-        //
-        this.cow.anims.play('cow_stand', true);
+        // cow animation
+        if(this.canGetMeat>0){
+            this.cow.anims.play('cow_stand', true);
+        }
+
         // Player controls
         if (this.cursors.left.isDown) {
             this.pixelPlayer.setVelocityX(-160);
@@ -124,14 +129,34 @@ class Farm extends Phaser.Scene {
                 // console.log('player x y ', this.pixelPlayer.x, this.pixelPlayer.y)
                 // cow
                 if (this.isInAreaCow) {
-                    // console.log('in area')
-                    this.pixelPlayer.anims.play('attack', true);
-                    this.cow.setTint(0xff0000);
-                    setTimeout(_=>{
-                        this.cow .clearTint();
-                    },500)
+                    //  limit can get meat num
+                    if (this.canGetMeat === 0) {
+                        this.cow.destroy()
+                    } else {
+                        // prevent sound play repeat
+                        if(!this.playing_attack_sound){
+                            this.playing_attack_sound = true
+                            this.sound.play('attack_cow')
+                            setTimeout(_=>{this.playing_attack_sound = false},2000)
+                        }
 
-                    this.game.meatNum = this.game.meatNum + 1
+
+                        this.pixelPlayer.anims.play('attack', true);
+                        this.cow.setTint(0xff0000);
+                        setTimeout(_ => {
+                            this.cow.clearTint();
+                        }, 500)
+                        if (this.canGetMeat > 0) {
+
+                            this.game.meatNum = this.game.meatNum + 1
+                            this.canGetMeat--
+                            if (this.canGetMeat === 0) {
+                                this.cow.destroy()
+                            }
+                        }
+                    }
+
+
                 }
             }
 
@@ -153,11 +178,11 @@ class Farm extends Phaser.Scene {
     }
 
     updateCountdown() {
-        console.log('this.game.survivalTime',this.game.survivalTime)
+        console.log('this.game.survivalTime', this.game.survivalTime)
         // Check the survival time > 0
         if (this.game.survivalTime >= 0) {
             this.game.survivalTime -= 1; // Increment the survival time by 1 second
-            this.timerText.text = 'Countdown:'+this.game.survivalTime
+            this.timerText.text = 'Countdown:' + this.game.survivalTime
         } else {
             // Game over
             this.game.GameOver = true;
@@ -167,7 +192,8 @@ class Farm extends Phaser.Scene {
             }, [], this);
         }
     }
-    releaseScenes(){
+
+    releaseScenes() {
 
     }
 

@@ -22,7 +22,7 @@ class GameOver extends Phaser.Scene {
         }
 
         // Add Game Over text
-        this.add.text(400, 200,this.game.score>1000? 'You are the Burger Boss':'You are a bad cook.', {fontSize: '35px', fill: '#fff'})
+        this.add.text(400, 200,this.game.score>1000? 'You are the Burger Boss':'You are a bad cook', {fontSize: '35px', fill: '#fff'})
             .setOrigin(0.5, 0.5);
 
 

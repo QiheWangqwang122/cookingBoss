@@ -4,7 +4,7 @@ class Credit extends Phaser.Scene {
     }
 
     preload() {
-
+        this.load.audio('attack_cow', './assets/sound/attack_cow.wav');
     }
 
     texts = []
@@ -25,8 +25,9 @@ class Credit extends Phaser.Scene {
         let creditText = [
             "              Credit",
             "\n\nProducer:         JASON WANG",
-            "\nArt Software:     aseperite",
-            "\nMusic Sources:    https://pixabay.com/"
+            "\nArt Software:     aseperite, texturePacker",
+            "\nMusic Sources:    https://pixabay.com/",
+ 	    "\n                  freesound.org. (2023, 12/14 ). freesound. Retrieved from [https://freesound.org/search/?q=cite]"
         ]
 
         this.add.text(150, 150, creditText, {
