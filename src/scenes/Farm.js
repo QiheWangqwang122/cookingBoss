@@ -9,8 +9,8 @@ class Farm extends Phaser.Scene {
         // // Load an image asset to represent the ground
         this.load.audio('attack_cow', './assets/sound/attack_cow.wav');
         this.load.spritesheet('cow', './assets/npc/cow.png', {frameWidth: 60, frameHeight: 60});
-        this.load.image('platForm', './assets/scene/platform.png')
-        this.load.image('platForm_long', './assets/scene/platForm_long.png')
+        this.load.image('platform', './assets/scene/platform.png')
+        this.load.image('platform_long', './assets/scene/platForm_long.png')
         this.load.spritesheet('attack', './assets/player/attack.png', {frameWidth: 50, frameHeight: 46})
     }
 
@@ -20,9 +20,9 @@ class Farm extends Phaser.Scene {
 
 
         const ground = this.physics.add.staticGroup();
-        ground.create(400, 600, 'platForm').setScale(8).refreshBody();
-        ground.create(120, 450, 'platForm_long').setScale(1).refreshBody();
-        ground.create(360, 320, 'platForm_long').setScale(1).refreshBody();
+        ground.create(400, 600, 'platform').setScale(8).refreshBody();
+        ground.create(120, 450, 'platform_long').setScale(1).refreshBody();
+        ground.create(360, 320, 'platform_long').setScale(1).refreshBody();
 
         this.pixelPlayer = this.physics.add.sprite(600, 400, 'player');
         this.pixelPlayer.setCollideWorldBounds(true);
