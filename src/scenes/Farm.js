@@ -10,7 +10,7 @@ class Farm extends Phaser.Scene {
         this.load.audio('attack_cow', './assets/sound/attack_cow.wav');
         this.load.spritesheet('cow', './assets/npc/cow.png', {frameWidth: 60, frameHeight: 60});
         this.load.image('platform', './assets/scene/platform.png')
-        this.load.image('platform_long', './assets/scene/platForm_long.png')
+        this.load.image('platform_long', './assets/scene/platform_long.png')
         this.load.spritesheet('attack', './assets/player/attack.png', {frameWidth: 50, frameHeight: 46})
     }
 
