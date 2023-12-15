@@ -1,6 +1,12 @@
 
 'use strict';
 
+/***
+ * First Name :Qihe(Jason)
+ * Last Naame :Wang
+ * Physics, Text, Animation, Timing, Tiles phaser3 emmiter
+ * 
+ */
 
 const config = {
     type: Phaser.AUTO,
